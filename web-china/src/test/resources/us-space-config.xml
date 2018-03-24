@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:os-core="http://www.openspaces.org/schema/core"
+       xmlns:os-remoting="http://www.openspaces.org/schema/remoting"
+       xmlns:os-gateway="http://www.openspaces.org/schema/core/gateway"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+       http://www.openspaces.org/schema/core http://www.openspaces.org/schema/12.1/core/openspaces-core.xsd
+       http://www.openspaces.org/schema/remoting http://www.openspaces.org/schema/12.1/remoting/openspaces-remoting.xsd
+       http://www.openspaces.org/schema/core/gateway http://www.openspaces.org/schema/12.1/core/gateway/openspaces-gateway.xsd">
+
+    <bean id="propertiesConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="properties" >
+            <props>
+                <prop key="kinvey.hostname">test.kinvey.com</prop>
+            </props>
+        </property>
+    </bean>
+
+    <context:annotation-config />
+
+    <os-core:giga-space-context/>
+ 
+    <!-- Embedded space. -->
+    <os-core:space id="space" url="/./SpaceUsTest" gateway-targets="gatewayTargets">
+        <os-core:replication-filter-provider ref="replicationFilterProvider" />
+    </os-core:space>
+
+    <os-gateway:targets id="gatewayTargets" local-gateway-name="USA">
+        <os-gateway:target name="CHINA" />
+    </os-gateway:targets>
+
+    <os-core:giga-space id="usSpace" space="space"/>
+
+    <os-gateway:delegator id="delegator" local-gateway-name="USA" gateway-lookups="gatewayLookups" start-embedded-lus="false">
+        <os-gateway:delegation target="CHINA" />
+    </os-gateway:delegator>
+
+    <os-gateway:lookups id="gatewayLookups" >
+        <os-gateway:lookup gateway-name="USA" host="localhost" discovery-port="4174"/>
+        <os-gateway:lookup gateway-name="CHINA" host="localhost" discovery-port="4174"/>
+    </os-gateway:lookups>
+
+    <os-remoting:service-exporter id="serviceExporter">
+        <os-remoting:service ref="kinveyDataRemotingService"/>
+    </os-remoting:service-exporter>
+
+    <bean id="replicationFilter" class="com.gigaspaces.fdal.replication.ReplicationFilter" />
+
+    <bean id="replicationFilterProvider" class="org.openspaces.core.space.filter.replication.DefaultReplicationFilterProviderFactory">
+        <property name="outputFilter" ref="replicationFilter" />
+    </bean>
+
+    <bean id="sessionDataManager" class="com.gigaspaces.fdal.utils.SessionDataManager" />
+    
+    <bean id="kinveyDataRemotingService" class="com.gigaspaces.fdal.service.remoting.KinveyDataRemotingService" >
+        <property name="usSpaceClustered" ref="usSpace"/>
+    </bean>
+
+    <bean id="clientHttpRequestFactory" class="org.springframework.http.client.SimpleClientHttpRequestFactory" />
+
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+         <constructor-arg ref="clientHttpRequestFactory"/>
+    </bean>
+
+    <bean id="client" class="com.gigaspaces.fdal.kinvey.KinveyRestClient"/>
+
+    <bean id="kinveyDataService" class="com.gigaspaces.fdal.service.KinveyDataService" />
+ 
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
+        <property name="serializationInclusion" value="NON_NULL" />
+    </bean>
+
+    <bean id="jacksonMessageChanger" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="supportedMediaTypes" value="application/json" />
+        <property name="objectMapper" ref="objectMapper" />
+        <property name="prefixJson" value="false" />
+    </bean>
+    
+    <bean id="kinveyDataAsyncService" class="com.gigaspaces.fdal.service.async.KinveyDataAsyncService" />
+</beans>

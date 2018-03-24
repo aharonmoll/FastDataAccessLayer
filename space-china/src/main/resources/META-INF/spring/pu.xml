@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:os-core="http://www.openspaces.org/schema/core"
+    xmlns:os-events="http://www.openspaces.org/schema/events"
+    xmlns:os-remoting="http://www.openspaces.org/schema/remoting"
+    xmlns:os-gateway="http://www.openspaces.org/schema/core/gateway"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+       http://www.openspaces.org/schema/core http://www.openspaces.org/schema/12.1/core/openspaces-core.xsd
+       http://www.openspaces.org/schema/core/gateway http://www.openspaces.org/schema/12.1/core/gateway/openspaces-gateway.xsd
+       http://www.openspaces.org/schema/events http://www.openspaces.org/schema/12.1/events/openspaces-events.xsd
+       http://www.openspaces.org/schema/remoting http://www.openspaces.org/schema/12.1/remoting/openspaces-remoting.xsd">
+
+    <!-- Enables to configure Spring beans through annotations -->
+    <context:annotation-config />
+
+    <context:component-scan base-package="com.gigaspaces.fdal" />
+
+    <!-- Enable GigaSpace annotations -->
+    <os-core:annotation-support />
+
+    <os-core:giga-space-context />
+
+    <os-core:distributed-tx-manager id="transactionManager" />
+
+    <bean name="userType" class="org.openspaces.core.config.GigaSpaceDocumentTypeDescriptorFactoryBean">
+        <property name="typeName" value="User" />
+        <property name="idProperty">
+            <bean class="org.openspaces.core.config.SpaceIdProperty">
+                <property name="propertyName" value="_id"></property>
+            </bean>
+        </property>
+        <property name="routingProperty">
+            <bean class="org.openspaces.core.config.SpaceRoutingProperty">
+                <property name="propertyName" value="_id"></property>
+            </bean>
+        </property>
+        <property name="indexes">
+             <list>
+                 <bean class="org.openspaces.core.config.BasicIndex">
+                    <property name="path" value="_kmd.authtoken"></property>
+                 </bean>
+            </list>
+        </property>
+        <property name="documentClass" value="com.gigaspaces.fdal.model.document.User" />
+    </bean>
+
+    <bean name="countryType" class="org.openspaces.core.config.GigaSpaceDocumentTypeDescriptorFactoryBean">
+        <property name="typeName" value="Country" />
+        <property name="idProperty">
+            <bean class="org.openspaces.core.config.SpaceIdProperty">
+                <property name="propertyName" value="_id"></property>
+            </bean>
+        </property>
+        <property name="routingProperty">
+            <bean class="org.openspaces.core.config.SpaceRoutingProperty">
+                <property name="propertyName" value="_id"></property>
+            </bean>
+        </property>
+        <property name="documentClass" value="com.gigaspaces.fdal.model.document.Country" />
+    </bean>
+
+    <bean name="privateDataType" class="org.openspaces.core.config.GigaSpaceDocumentTypeDescriptorFactoryBean">
+        <property name="typeName" value="PrivateData" />
+        <property name="documentClass" value="com.gigaspaces.fdal.model.document.PrivateData" />
+    </bean>
+
+    <bean name="favoriteDocumentType" class="org.openspaces.core.config.GigaSpaceDocumentTypeDescriptorFactoryBean">
+        <property name="typeName" value="FavoriteDocument" />
+        <property name="idProperty">
+            <bean class="org.openspaces.core.config.SpaceIdProperty">
+                <property name="propertyName" value="_id"></property>
+            </bean>
+        </property>
+        <property name="routingProperty">
+            <bean class="org.openspaces.core.config.SpaceRoutingProperty">
+                <property name="propertyName" value="creator"></property>
+            </bean>
+        </property>
+        <property name="documentClass" value="com.gigaspaces.fdal.model.document.FavoriteDocument" />
+        <property name="superType" ref="privateDataType" />
+    </bean>
+
+    <bean name="favoriteRangeType" class="org.openspaces.core.config.GigaSpaceDocumentTypeDescriptorFactoryBean">
+        <property name="typeName" value="FavoriteRange" />
+        <property name="idProperty">
+            <bean class="org.openspaces.core.config.SpaceIdProperty">
+                <property name="propertyName" value="_id"></property>
+            </bean>
+        </property>
+        <property name="routingProperty">
+            <bean class="org.openspaces.core.config.SpaceRoutingProperty">
+                <property name="propertyName" value="creator"></property>
+            </bean>
+        </property>
+        <property name="documentClass" value="com.gigaspaces.fdal.model.document.FavoriteRange" />
+        <property name="superType" ref="privateDataType" />
+    </bean>
+
+    <bean name="favoriteProductType" class="org.openspaces.core.config.GigaSpaceDocumentTypeDescriptorFactoryBean">
+        <property name="typeName" value="FavoriteProduct" />
+        <property name="idProperty">
+            <bean class="org.openspaces.core.config.SpaceIdProperty">
+                <property name="propertyName" value="_id"></property>
+            </bean>
+        </property>
+        <property name="routingProperty">
+            <bean class="org.openspaces.core.config.SpaceRoutingProperty">
+                <property name="propertyName" value="creator"></property>
+            </bean>
+        </property>
+        <property name="documentClass" value="com.gigaspaces.fdal.model.document.FavoriteProduct" />
+        <property name="superType" ref="privateDataType" />
+    </bean>
+
+    <bean name="favoriteFAQType" class="org.openspaces.core.config.GigaSpaceDocumentTypeDescriptorFactoryBean">
+        <property name="typeName" value="FavoriteFAQ" />
+        <property name="idProperty">
+            <bean class="org.openspaces.core.config.SpaceIdProperty">
+                <property name="propertyName" value="_id"></property>
+            </bean>
+        </property>
+        <property name="routingProperty">
+            <bean class="org.openspaces.core.config.SpaceRoutingProperty">
+                <property name="propertyName" value="creator"></property>
+            </bean>
+        </property>
+        <property name="documentClass" value="com.gigaspaces.fdal.model.document.FavoriteFAQ" />
+        <property name="superType" ref="privateDataType" />
+    </bean>
+
+    <bean id="space" class="org.openspaces.core.space.EmbeddedSpaceFactoryBean">
+        <property name="name" value="SpaceChina" />
+        <property name="spaceTypes" >
+              <list>
+                    <ref bean="userType"/>
+                    <ref bean="countryType"/>
+                    <ref bean="favoriteDocumentType"/>
+                    <ref bean="favoriteRangeType"/>
+                    <ref bean="favoriteProductType"/>
+                    <ref bean="favoriteFAQType"/>
+              </list>
+         </property>
+    </bean>
+    
+    <!-- Java proxy to the space -->
+    <os-core:giga-space id="gigaSpace" space="space" tx-manager="transactionManager" />
+
+</beans>

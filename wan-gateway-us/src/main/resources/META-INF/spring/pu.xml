@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:os-gateway="http://www.openspaces.org/schema/core/gateway"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://www.openspaces.org/schema/core/gateway http://www.openspaces.org/schema/12.1/core/gateway/openspaces-gateway.xsd">
+
+    <os-gateway:delegator id="delegator" local-gateway-name="USA" gateway-lookups="gatewayLookups" start-embedded-lus="false">
+        <os-gateway:delegation target="CHINA" />
+    </os-gateway:delegator>
+
+    <os-gateway:lookups id="gatewayLookups" >
+        <os-gateway:lookup gateway-name="USA" host="${usa.host}" discovery-port="${usa.lus.port}" communication-port="5000"/>
+        <os-gateway:lookup gateway-name="CHINA" host="${china.host}" discovery-port="${china.lus.port}" communication-port="5001"/>
+    </os-gateway:lookups>
+</beans>
